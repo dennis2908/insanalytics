@@ -62,6 +62,15 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
+		
+		'mysql_prd' => [
+			'driver'    => 'mysql',
+			'host'      => '192.168.20.60',
+			'port'      => 3306,
+			'database'  => 'poskota_prd',
+			'username'  => 'poskota',
+			'password'  => 'tAKdK7tTdqOOTbsr',
+		],
 
         'pgsql' => [
             'driver' => 'pgsql',

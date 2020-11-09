@@ -63,7 +63,7 @@ class InsToAnalytic extends Command
 			'filters' => $data
 		]);
 		$datad = $analyticsData['rows'];
-		$dataDB = array_column(\DB::table(DB::raw('posts'))->selectRaw('CONCAT("/",DATE_FORMAT(publish_date, "%Y/%c/%d"),"/",post_slug) as slug')->whereIn(\DB::raw('CONCAT("/",DATE_FORMAT(publish_date, "%Y/%c/%d"),"/",post_slug)'),array_column($analyticsData['rows'],'1'))->get()->toArray(),'slug');		
+		$dataDB = array_column(\DB::connection('mysql_prd')->table(DB::connection('mysql_prd')->raw('posts'))->selectRaw('CONCAT("/",DATE_FORMAT(publish_date, "%Y/%c/%d"),"/",post_slug) as slug')->whereIn(\DB::connection('mysql_prd')->raw('CONCAT("/",DATE_FORMAT(publish_date, "%Y/%c/%d"),"/",post_slug)'),array_column($analyticsData['rows'],'1'))->get()->toArray(),'slug');		
 		$newdata = [];
 		$k=0;
 		foreach($datad as &$val){
@@ -86,7 +86,7 @@ class InsToAnalytic extends Command
 		$analytics= array_chunk($newdata, 500, true);
 		
 		foreach ($analytics as $key => $analytic) {
-		  DB::table('t_analytics')->insert($analytic);
+		  DB::connection('mysql')->table('t_analytics')->insert($analytic);
 		}
     }
 }
