@@ -119,7 +119,7 @@ class HomeController extends Controller
 		//dd(Analytics::getTopKeyWordsForPeriod("2010-02-10", "2010-02-10", 30));
 	}
 	
-	function general(Request $request){
+	function generalOld(Request $request){
 		
 		set_time_limit(0);
 		if ($request->ajax()) {
@@ -136,6 +136,54 @@ class HomeController extends Controller
         //dd($sql);
 
             return Datatables::of($dataAll)->addIndexColumn()->make(true);
+
+        }
+
+        return view('user');
+
+
+	}
+	
+	function general(Request $request){
+		
+		set_time_limit(0);
+		if ($request->ajax()) {
+
+            $data = DB::connection('mysql_prd')->table('users')->selectRaw('id,name,email')
+			->join('posts','posts.created_by','=','users.id')
+			->join('role_users','role_users.user_id','=','users.id')
+			->where('role_id',2)->groupBy(['users.id','name','email']);
+			
+			$sql = Str::replaceArray('?', $data->getBindings(), $data->toSql());
+			$dataAll = DB::select('select * from('.$sql.')b');
+
+        //dd($sql);
+
+            return Datatables::of($dataAll)->addIndexColumn()
+			->addColumn('dataAnalytics',function ($data){
+			
+			$dataPosts = \DB::connection('mysql_prd')->table('users')->selectRaw('CONCAT("/",DATE_FORMAT(publish_date, "%Y/%c/%d"),"/",post_slug) as slug')
+			->leftJoin('posts','posts.created_by','=','users.id')
+			->leftJoin('role_users','role_users.user_id','=','users.id')
+			->where('users.id',$data->id)->get()->toArray();
+			$get['visitors'] = 0;
+			$get['viewers'] = 0;
+			$get['bounceRate'] = 0;
+			if($dataPosts){
+				//dd($dataPosts);
+				$dataPosts_slug = array_column($dataPosts,'slug');
+				$arr = \DB::table('t_analytics')->select(['users','pageviews','bounceRate'])->whereIn('pagePath',$dataPosts_slug)->get()->toArray();	
+				
+				if($arr){
+					$get['visitors']= array_sum(array_column($arr,'users'));
+					$get['viewers']= array_sum(array_column($arr,'pageviews'));
+					$get['bounceRate']= array_sum(array_column($arr,'bounceRate'))/count(array_column($arr,'pageviews'));
+				}
+			}
+
+            return $get;
+			})
+			->make(true);
 
         }
 

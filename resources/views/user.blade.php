@@ -92,9 +92,9 @@
             { data: 'DT_RowIndex', orderable: false, searchable: false },
 			{data: 'name', name: 'name'},
 			{data: 'email', name: 'email'},
-            {data: 'sumusers', name: 'sumusers'},
-			{data: 'sumpageviews', name: 'sumpageviews'},
-			{data: 'bounceRateAvg', name: 'bounceRateAvg'},
+            {data: 'dataAnalytics.visitors', orderable: false, searchable: false},
+			{data: 'dataAnalytics.viewers', orderable: false, searchable: false},
+			{data: 'dataAnalytics.bounceRate', orderable: false, searchable: false},
       
         ]
 
